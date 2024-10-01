@@ -27,7 +27,6 @@ net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
 
 def dnn_detect_faces(frame):
     h,w = frame.shape[:2]
-    # blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0,(300, 300), (104.0, 117.0, 123.0))
     blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0,(300, 300), (104.0, 117.0, 123.0))
     net.setInput(blob)
     detections = net.forward()
@@ -37,7 +36,7 @@ def dnn_detect_faces(frame):
         confidence = detections[0, 0, i, 2]
 
         # Filter out weak detections
-        if confidence > 0.3:
+        if confidence > 0.5:
             # Get the coordinates of the bounding box
             box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
             (x1, y1, x2, y2) = box.astype("int")
