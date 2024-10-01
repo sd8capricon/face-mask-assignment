@@ -1,0 +1,51 @@
+no_mask = ["face_no_mask", "face_with_mask_incorrect"]
+mask = ["face_with_mask", "mask_colorful", "mask_surgical"]
+classes_to_retain = mask+no_mask
+
+mappings = {
+    "face_with_mask": 1,
+    "mask_colorful": 1,
+    "mask_surgical": 1,
+    "hat": 0,
+    "eyeglasses": 0,
+    "sunglasses": 0,
+    "face_other_covering": 0,
+    "face_no_mask": 0,
+    "face_with_mask_incorrect": 0,
+    "hair_net": 0,
+    "scarf_bandana": 0,
+    "goggles": 0,
+    "helmet": 0,
+    "face_shield": 0,
+    "other": 0,
+    "hood": 0,
+    "hijab_niqab": 0,
+    "balaclava_ski_mask": 0,
+    "turban": 0,
+    "gas_mask": 0,
+}
+
+gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+faces = face_cascade.detectMultiScale(gray_img, scaleFactor=1.1, minNeighbors=5)
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+for (x, y, w, h) in faces:
+    # Extract the face region of interest (ROI)
+    face_roi = img[y:y+h, x:x+w]
+
+    # Draw a rectangle around the face
+    face_roi = cv2.resize(face_roi, (100,100))
+    face_roi = np.reshape(face_roi, (1,100,100,3))
+
+    prediction = model.predict(np.stack(face_roi))
+    print(prediction[0])
+    if prediction[0][0] > 0.6:
+        predicted_class = "With Mask"
+    else:
+        predicted_class = "No Mask"
+
+    cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    cv2.putText(img, f"{predicted_class}", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+# Display the image with detected faces
+plt.imshow(img)
