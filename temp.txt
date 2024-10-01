@@ -25,6 +25,7 @@ mappings = {
     "gas_mask": 0,
 }
 
+haar
 gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 faces = face_cascade.detectMultiScale(gray_img, scaleFactor=1.1, minNeighbors=5)
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -48,4 +49,27 @@ for (x, y, w, h) in faces:
     cv2.putText(img, f"{predicted_class}", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
 # Display the image with detected faces
+plt.imshow(img)
+
+mtcnn
+faces = detect_faces(img)
+for (x1, y1, x2, y2) in faces:
+    face_roi = img[y1:y2, x1:x2]
+    face_resized = cv2.resize(face_roi, (100, 100))
+    face_resized = np.reshape(face_resized, (1,100,100,3))
+
+    prediction = model.predict(face_resized)
+    print(prediction[0][0])
+
+    if prediction[0][0] > 0.5:
+        predicted_class = "With Mask"
+    else:
+        predicted_class = "No Mask"
+
+    cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+    cv2.putText(img, f"{predicted_class}", (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+if len(faces) == 0:
+    print("No Faces")
+
 plt.imshow(img)
