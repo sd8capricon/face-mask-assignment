@@ -1,8 +1,9 @@
 FROM jupyter/scipy-notebook:latest
 
-WORKDIR /notebooks
+WORKDIR /Task1
 
-COPY . /notebooks
+COPY . /Task1
 
 EXPOSE 8888
 
+CMD ["start-notebook.sh", "--NotebookApp.token=''", "--NotebookApp.password=''"]
