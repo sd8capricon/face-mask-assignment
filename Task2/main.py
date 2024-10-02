@@ -7,7 +7,7 @@ from face_detection_tracking import (
     make_detections_with_tracking,
 )
 
-VIDEO_PATH = "data"
+VIDEO_PATH = "test_videos"
 OUT_PATH = "out"
 
 video_filenames = [
