@@ -60,6 +60,7 @@ def load_video(video_path):
         frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
     cap.release()
     return np.array(frames)
+    # return cap
 
 
 def save_video(frames, output_path, fps=30):
@@ -77,31 +78,7 @@ def save_video(frames, output_path, fps=30):
     print(f"Video saved successfully to {output_path}")
 
 
-# rgb_frame = video[120]
-# faces = dnn_detect_faces(rgb_frame)
-# if len(faces) == 0:
-#     print("No Faces Detected")
-# else:
-#     for x1, y1, x2, y2 in faces:
-#         face_roi = rgb_frame[y1:y2, x1:x2]
-#         predicted_class = detect_mask(face_roi)
-#         print(predicted_class)
-#         cv2.rectangle(rgb_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-#         cv2.putText(
-#             rgb_frame,
-#             f"{predicted_class}",
-#             (x1, y1 - 10),
-#             cv2.FONT_HERSHEY_SIMPLEX,
-#             0.5,
-#             (0, 255, 0),
-#             1,
-#         )
-
-# plt.imshow(rgb_frame)
-# plt.show()
-
-
-def make_detections(video, face_confidence):
+def make_detections(video, face_confidence=0.5):
     print("Making Detections")
     new_frames = []
     for rgb_frame in video:
@@ -128,57 +105,53 @@ def make_detections(video, face_confidence):
         if cv2.waitKey(25) & 0xFF == ord("q"):
             break
     print("Done")
+    cv2.destroyAllWindows()
     return np.array(new_frames)
 
 
-def make_detection_with_tracking(video, face_confidence):
-    new_frames = []
+def make_detections_with_tracking(video, detection_interval=30, face_confidence=0.5):
     trackers = []
-    b_boxes = []
+    new_frames = []
 
-    for frame_index, rgb_frame in enumerate(video):
-        # If no trackers/periocidically(every 30frames)
-        if len(trackers) == 0 or frame_index % 60 == 0:
-            faces = dnn_detect_faces(rgb_frame, confidence_threshold=face_confidence)
-            for x1, y1, x2, y2 in faces:
-                new_face = True
+    for frame_count, frame in enumerate(video):
 
-                for bbox in b_boxes:
-                    (bx1, by1, bx2, by2) = bbox
-                    # If face close to an already tracked face
-                    if abs(bx1 - x1) < 30 and abs(by1 - y1) < 30:
-                        new_face = False
-                        break
-
-                if new_face:
+        # Every 30 frames or when no trackers are present, re-detect faces
+        if frame_count % detection_interval == 0 or len(trackers) == 0:
+            trackers.clear()  # Clear old trackers to avoid duplicates
+            faces = dnn_detect_faces(frame, confidence_threshold=face_confidence)
+            if len(faces) > 0:
+                for x1, y1, x2, y2 in faces:
+                    face_roi = frame[y1:y2, x1:x2]
+                    predicted_class = detect_mask(face_roi)
                     tracker = cv2.legacy.TrackerKCF_create()
-                    trackers.append(tracker)
-                    b_boxes.append((x1, y1, x2, y2))
-                    tracker.init(rgb_frame, (x1, y1, x2, y2))
+                    tracker.init(frame, (x1, y1, x2 - x1, y2 - y1))
+                    trackers.append({"tracker": tracker, "class": predicted_class})
+        else:
+            # Update all trackers
+            for i, tracker in enumerate(trackers):
+                success, bbox = tracker["tracker"].update(frame)
+                if success:
+                    (x1, y1, w, h) = [int(v) for v in bbox]
+                    cv2.putText(
+                        frame,
+                        f"{tracker['class']}",
+                        (x1, y1 - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5,
+                        (0, 255, 0),
+                        1,
+                    )
+                    cv2.rectangle(frame, (x1, y1), (x1 + w, y1 + h), (0, 255, 0), 2)
+                else:
+                    trackers.pop(i)
 
-        # Update all existing trackers
-        updated_boxes = []
-        for _, tracker in enumerate(trackers):
-            success, bbox = tracker.update(rgb_frame)
-            if success:
-                updated_boxes.append(bbox)
-                (x1, y1, x2, y2) = [int(v) for v in bbox]
-                cv2.rectangle(rgb_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            else:
-                # Remove tracker if tracking fails
-                updated_boxes.append(None)
-
-        # Remove trackers for lost objects
-        trackers = [t for i, t in enumerate(trackers) if updated_boxes[i] is not None]
-        b_boxes = [b for b in updated_boxes if b is not None]
-
-        new_frames.append(rgb_frame)
+        new_frames.append(frame)
 
         # Display the frame
-        cv2.imshow("Frame", cv2.cvtColor(rgb_frame, cv2.COLOR_RGB2BGR))
+        cv2.imshow("Frame", cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
 
-        if cv2.waitKey(25) & 0xFF == ord("q"):
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
-    print("Done")
+    cv2.destroyAllWindows()
     return np.array(new_frames)
