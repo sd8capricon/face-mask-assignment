@@ -28,7 +28,7 @@ if not os.path.exists("out/with_tracking"):
 for i, video_name in enumerate(video_filenames):
 
     print("Loading Video Now")
-    save_as = f"output_video{i+1}"
+    save_as = f"output_video{i+1}.mp4"
     video = load_video(os.path.join(VIDEO_PATH, video_name))
 
     # Make detections without tracking
@@ -38,13 +38,11 @@ for i, video_name in enumerate(video_filenames):
     # save the video
 
     print("Print Making Face Mask Detections with Object Tracking")
-    save_video(video_wo_tracking, os.path.join(OUT_PATH, video_name))
+    save_video(video_wo_tracking, os.path.join(OUT_PATH, save_as))
 
     video_w_tracking = make_detections_with_tracking(
         video, detection_interval=60, face_confidence=0.4
     )
 
     # save the tracked video
-    save_video(
-        video_w_tracking, os.path.join(OUT_PATH, f"with_tracking/output _video{i+1}")
-    )
+    save_video(video_w_tracking, os.path.join(OUT_PATH, f"with_tracking/{save_as}"))
