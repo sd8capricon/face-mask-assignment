@@ -10,6 +10,12 @@ from face_detection_tracking import (
 VIDEO_PATH = "test_videos"
 OUT_PATH = "out"
 
+""" 
+Face detector algotihms seems to wrork great on front facing images 
+but don't perform well on different face angles very well.
+Between the Haarcascade, MTCNN and Caffe Model Caffe Model seemed to perform better and faster
+"""
+
 video_filenames = [
     "Test_video1.mp4",
     "Test_video2.mp4",
