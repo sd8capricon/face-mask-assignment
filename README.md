@@ -12,8 +12,13 @@ pip install -r requirements
 ## Task 1: Training
 
 ### Preparing the Data Directory
-place the Medical Mask containing the images directory inside the data directory such as:\
+place the Medical Mask directory containing the images directory inside the data directory such as:\
 ![data-directory](./images/image.png)
+
+### If using docker copy the data to the container
+```bash
+docker cp data/ containerid:/Task1
+```
 
 ### Check the notebooks
 Run the Notebooks in the following order
