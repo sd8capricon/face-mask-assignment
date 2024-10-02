@@ -1,5 +1,5 @@
 # Face Mask Detection with Face Tracking
-Detec
+Utitlized TensorFlow with OpenCV, utilizing MobileNetV2 for transfer learning to classify faces with or without masks. It employs a Caffe model for face detection and uses the KCF algorithm from OpenCV to track faces across video frames, optimizing performance by reducing the need for repeated face detection.
 
 ## Setup Environment
 Run the DOCKERFILE to setup the jupyter lab\
