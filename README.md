@@ -1,5 +1,6 @@
 # Face Mask Detection with Face Tracking
-Utitlized TensorFlow with OpenCV, utilizing MobileNetV2 for transfer learning to classify faces with or without masks. It employs a Caffe model for face detection and uses the KCF algorithm from OpenCV to track faces across video frames, optimizing performance by reducing the need for repeated face detection.
+Utitlized TensorFlow with OpenCV, utilizing MobileNetV2 for transfer learning to classify faces with or without masks. It employs a Caffe model for face detection and uses the KCF algorithm from OpenCV to track faces across video frames, optimizing performance by reducing the need for repeated face detection.\
+<img width="640" src="display/detection.png" alt="demo image of detection"/>
 
 ## Setup Environment
 Run the DOCKERFILE to setup the jupyter lab\
@@ -13,7 +14,7 @@ pip install -r requirements
 
 ### Preparing the Data Directory
 place the Medical Mask directory containing the images directory inside the data directory such as:\
-![data-directory](./images/image.png)
+![data-directory](./display/dir.png)
 
 ### If using docker copy the data to the container
 ```bash
