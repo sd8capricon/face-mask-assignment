@@ -83,9 +83,7 @@ def make_detections(video, face_confidence=0.5):
     new_frames = []
     for rgb_frame in video:
         faces = dnn_detect_faces(rgb_frame, confidence_threshold=face_confidence)
-        if len(faces) == 0:
-            print("No Faces Detected")
-        else:
+        if len(faces) != 0:
             for x1, y1, x2, y2 in faces:
                 face_roi = rgb_frame[y1:y2, x1:x2]
                 predicted_class = detect_mask(face_roi)

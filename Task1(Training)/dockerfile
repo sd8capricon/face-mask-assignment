@@ -1,0 +1,8 @@
+FROM jupyter/scipy-notebook:latest
+
+WORKDIR /notebooks
+
+COPY . /notebooks
+
+EXPOSE 8888
+
