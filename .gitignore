@@ -13,3 +13,6 @@ data/
 
 # Ignore NumPy array files
 npy/
+
+# Ignore mac os files
+.DS_Store
